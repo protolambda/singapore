@@ -6,5 +6,5 @@ class ShardCommittee {
   List<int> committee;
 
   /// Total validator count (for proofs of custody)
-  int total_validator_count;
+  int totalValidatorCount;
 }

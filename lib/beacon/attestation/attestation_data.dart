@@ -8,20 +8,20 @@ class AttestationData {
   int shard;
 
   /// Hash of the signed beacon block
-  Hash256 beacon_block_hash;
+  Hash256 beaconBlockHash;
 
   /// Hash of the ancestor at the epoch boundary
-  Hash256 epoch_boundary_hash;
+  Hash256 epochBoundaryHash;
 
   /// Shard block hash being attested to
-  Hash256 shard_block_hash;
+  Hash256 shardBlockHash;
 
   /// Last crosslink hash
-  Hash256 latest_crosslink_hash;
+  Hash256 latestCrosslinkHash;
 
   /// Slot of the last justified beacon block
-  int justified_slot;
+  int justifiedSlot;
 
   /// Hash of the last justified beacon block
-  Hash256 justified_block_hash;
+  Hash256 justifiedBlockHash;
 }

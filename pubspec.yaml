@@ -1,0 +1,16 @@
+name: singapore
+description: ETH-singapore hack, simplified sharding implementation, built on top of protolith.
+version: 0.0.1
+homepage: https://github.com/protolambda/protolith
+author: proto <proto@protolambda.com>
+license: MIT
+
+environment:
+  sdk: '>=2.1.0 <3.0.0'
+
+dependencies:
+  protolith:
+    path: ../protolith
+
+dev_dependencies:
+  test: ^1.0.0

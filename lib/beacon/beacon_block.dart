@@ -44,6 +44,8 @@ class BeaconBlock<M extends BeaconBlockMeta> extends Block<M>
   @override
   Future<bool> validate(M meta) async {
     // TODO validate block
+
+
     return false;
   }
 

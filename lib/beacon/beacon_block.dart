@@ -56,4 +56,14 @@ class BeaconBlock<M extends BeaconBlockMeta> extends Block<M>
         // TODO
       ]);
 
+  List<Hash256> getUpdatedAncestorHashes() {
+    List<Hash256> newAncestorHashes = new List.from(this.ancestorHashes);
+    for (int i = 0; i < 32; i++) {
+      if (this.slot % (1 << i) == 0) {
+        newAncestorHashes[i] = this.hash;
+      }
+    }
+    return newAncestorHashes;
+  }
+
 }

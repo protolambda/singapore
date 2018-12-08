@@ -2,6 +2,8 @@
 import 'package:protolith/blockchain/block/standard_block.dart';
 import 'package:protolith/blockchain/chain/block_chain.dart';
 import 'package:protolith/blockchain/chain/standard_block_chain.dart';
+import 'package:protolith/blockchain/hash.dart';
+import 'package:protolith/crypto/data_util.dart';
 import 'package:singapore/beacon/beacon_block.dart';
 import 'package:singapore/beacon/beacon_block_meta.dart';
 import 'package:singapore/beacon/unfinalized/beacon_entry.dart';
@@ -15,40 +17,55 @@ class BeaconBlockChain<M extends BeaconBlockMeta, B extends BeaconBlock<M>> exte
   /// (Note; this is just the interface, data may come from elsewhere)
   StandardBlockChain eth1Chain;
 
-  // TODO: the current `lastBlock` is just the first of the list of blocks
-  //  with `block.number == blockheight`.
-  // For real sharding, GHOST has to be implemented as fork-choice.
-
-  /// The unfinalized beacon block-state tuples stored in a leveled DAG.
+  /// The unfinalized beacon blocks are stored in a leveled DAG.
   /// A path may be derived starting from the last finalized beacon state,
   ///  and derive a head.
-  final Dag<BeaconEntry> beaconStates = new Dag<BeaconEntry>(lmdGhost);
+  final Dag<BeaconEntry> beaconBlocks = new Dag<BeaconEntry>(lmdGhost);
+
+  BeaconBlockMeta state;
+
+  /// Blockheight is interchangeable with slot, but kept for compatibility.
+  int get blockHeight => state.slot;
+  set blockHeight(int v) => state.slot = v;
+
+  Future<B> get lastBlock async {
+    return await db.getBlockByHash(state.latestBlockHashes[state.slot]);
+  }
 
   @override
   Future<M> getBlockMeta(int blockNum) async {
-    // if the block is not finalized (i.e. under block-height), then look in the DAG.
-    if (blockHeight <= blockNum) {
-      if (blockNum < beaconStates.maxLevel) {
-        return beaconStates.findPath(maxLevel: blockNum).last.state;
-      }
+    // Always return state; this is finalized. // TODO: worth/necessary to still keep old states?
+    // Conform to the block-number based meta retrieval; this makes coding a fork cleaner.
+    return state;
+  }
+
+  B lastProposedBlock;
+
+  /// Transition to the next slot. (and processing any proposed block)
+  Future nextSlot() async {
+    // update state data
+    state.slot += 1;
+    B latestBlock = null;
+    if (lastProposedBlock != null) {
+      // Verify that block.slot == state.slot
+      if (lastProposedBlock.slot != state.slot)
+        throw Exception("Proposed block is for mismatching slot number");
+      // Verify that block.ancestor_hashes equals get_updated_ancestor_hashes(latest_block, latest_hash)
+      List<Hash256> hashes = latestBlock.getUpdatedAncestorHashes();
+      if (!listElementwiseComparison(lastProposedBlock.ancestorHashes, hashes))
+        throw Exception("New block ancestors are invalid.");
+
+      latestBlock = lastProposedBlock;
+      lastProposedBlock = null;
     } else {
-      // old block, just retrieve meta from DB
-      return await this.getFinalizedBeaconState(blockNum);
+      latestBlock = (await lastBlock);
     }
-      throw Exception("Block $blockNum is too new, no data available, state data is at ${blockHeight - 1}");
-  }
-
-  /// temporary hack; we can implement a real DB when we need it
-  Map<int, BeaconBlockMeta> finalizedBeaconStateDB = new Map();
-
-  /// Older states are just saved in a "DB", we do not need a DAG / GHOST,
-  ///  finalized finalized block states will not change.
-  Future<BeaconBlockMeta> getFinalizedBeaconState(int slotNum) async {
-    return this.finalizedBeaconStateDB[slotNum];
+    state.latestBlockHashes.add(latestBlock.hash);
   }
 
 
-  /// TODO: based on chain confirmations we need to move beacon states from unfinalized DAG to finalized DB.
+
+  /// TODO: based on chain consensus we need to move beacon states from unfinalized DAG to finalized DB.
 
   /// Future throws if block is invalid.
   Future validateNewBlock(B block) async {
@@ -57,7 +74,7 @@ class BeaconBlockChain<M extends BeaconBlockMeta, B extends BeaconBlock<M>> exte
     B prev = await lastBlock;
     // 1. The parent block with hash block.ancestor_hashes[0] has been processed and accepted.
     if (block.ancestorHashes[0] != prev.hash) throw Exception("Blockchain not synced, unknown ancestor reference.");
-    // 2. The node has processed its state up to slot, block.slot - 1.
+    // 2. The node has processed its state up to slot, block.slot - 1. [in a situation the slot is not active yet]
     if (block.slot == blockHeight + 1) throw Exception("Blockchain not synced, cannot add block #${block.slot} to chain at height #${blockHeight}.");
     // 3. The Ethereum 1.0 block pointed to by the state.processed_pow_receipt_root has been processed and accepted.
     M currentMeta = await getBlockMeta(block.slot);
@@ -66,6 +83,15 @@ class BeaconBlockChain<M extends BeaconBlockMeta, B extends BeaconBlock<M>> exte
     // 4. The node's local clock time is greater than or equal to state.genesis_time + block.slot * SLOT_DURATION.
     // TODO: for demo purposes we completely ignore time; it's just an additional
     //   acceptation thing to prevent timestamp manipulation, which is just what we do in a demo.
+  }
+
+  @override
+  Future addValidBlock(B block) async {
+    // Instead of adding it to the DB, we keep track of the last proposed block,
+    //  and then the slot transition will process it.
+    if (lastProposedBlock == null || lastProposedBlock.slot <= block.slot) {
+      lastProposedBlock = block;
+    }
   }
 
 }

@@ -1,14 +1,11 @@
 
 import 'package:protolith/blockchain/hash.dart';
 import 'package:singapore/beacon/beacon_block.dart';
-import 'package:singapore/beacon/beacon_block_meta.dart';
 import 'package:singapore/beacon/unfinalized/dag/dag.dart';
 
 class BeaconEntry extends DagNode<Hash256> {
 
   BeaconBlock block;
-
-  BeaconBlockMeta state;
 
   @override
   bool operator ==(Object other) =>

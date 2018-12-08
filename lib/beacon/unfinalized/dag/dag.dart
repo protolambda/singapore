@@ -67,11 +67,11 @@ class Dag<N extends DagNode> {
     }
   }
 
-  Iterable<N> findPath({int maxLevel: null}) sync* {
+  Stream<N> findPath({int maxLevel: null}) async* {
     if (maxLevel == null) maxLevel = _levels.length;
     N prev = null;
     for (int i = 0; i < maxLevel; i++) {
-      N chosen = this.forkChoiceRule.chooseNode(prev, _levels[i]);
+      N chosen = await this.forkChoiceRule.chooseNode(prev, _levels[i]);
       yield chosen;
       prev = chosen;
     }

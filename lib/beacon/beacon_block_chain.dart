@@ -1,15 +1,19 @@
 
 import 'package:protolith/blockchain/block/standard_block.dart';
-import 'package:protolith/blockchain/chain/blockchain.dart';
-import 'package:protolith/blockchain/chain/standard_chain.dart';
+import 'package:protolith/blockchain/chain/block_chain.dart';
+import 'package:protolith/blockchain/chain/standard_block_chain.dart';
 import 'package:singapore/beacon/beacon_block.dart';
 import 'package:singapore/beacon/beacon_block_meta.dart';
 
-class BeaconChain<M extends BeaconBlockMeta, B extends BeaconBlock<M>> extends BlockChain<M, B> {
+class BeaconBlockChain<M extends BeaconBlockMeta, B extends BeaconBlock<M>> extends BlockChain<M, B> {
 
   /// The standard chain is synced as well, to use for POW.
   /// (Note; this is just the interface, data may come from elsewhere)
-  StandardChain eth1Chain;
+  StandardBlockChain eth1Chain;
+
+  // TODO: the current `lastBlock` is just the first of the list of blocks
+  //  with `block.number == blockheight`.
+  // For real sharding, GHOST has to be implemented as fork-choice.
 
   // TODO: instead of keeping the state for every block in memory this
   //  could also be extracted as a special DB component,

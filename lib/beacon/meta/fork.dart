@@ -1,5 +1,8 @@
-import 'package:singapore/beacon/beacon_block_meta.dart';
+import 'package:protolith/blockchain/meta/blocks/meta.dart';
+import 'package:singapore/beacon/forking/fork_data.dart';
 
-mixin Fork on BeaconBlockMeta {
+mixin Fork on BlockMeta {
 
+  /// For versioning hard forks
+  ForkData forkData;
 }

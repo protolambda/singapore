@@ -1,8 +1,8 @@
 import 'package:protolith/blockchain/hash.dart';
-import 'package:singapore/beacon/beacon_block_meta.dart';
+import 'package:protolith/blockchain/meta/blocks/meta.dart';
 import 'package:singapore/beacon/validators/validator_record.dart';
 
-mixin ValidatorRegistry on BeaconBlockMeta {
+mixin ValidatorRegistry on BlockMeta {
   /// Validator registry
   List<ValidatorRecord> validatorRegistry;
   int validatorRegistryLatestChangeSlot;

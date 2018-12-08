@@ -1,6 +1,6 @@
-import 'package:singapore/beacon/beacon_block_meta.dart';
+import 'package:protolith/blockchain/meta/blocks/meta.dart';
 
-mixin Finality on BeaconBlockMeta {
+mixin Finality on BlockMeta {
 
   int previousJustifiedSlot;
   int justifiedSlot;

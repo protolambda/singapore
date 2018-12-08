@@ -2,8 +2,35 @@
 import 'package:protolith/blockchain/block/standard_block.dart';
 import 'package:protolith/blockchain/chain/block_chain.dart';
 import 'package:protolith/blockchain/chain/standard_block_chain.dart';
+import 'package:protolith/blockchain/hash.dart';
 import 'package:singapore/beacon/beacon_block.dart';
 import 'package:singapore/beacon/beacon_block_meta.dart';
+import 'package:singapore/beacon/unfinalized/dag/dag.dart';
+import 'package:singapore/beacon/unfinalized/ghost.dart';
+
+class BeaconEntry extends DagNode<Hash256> {
+
+  BeaconBlock block;
+
+  BeaconBlockMeta state;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+          other is BeaconEntry &&
+              runtimeType == other.runtimeType &&
+              block.hash == other.block.hash;
+
+  @override
+  int get hashCode => block.hashCode;
+
+  @override
+  Hash256 get inwards => null;
+
+  @override
+  Hash256 get key => block.hash;
+
+}
 
 class BeaconBlockChain<M extends BeaconBlockMeta, B extends BeaconBlock<M>> extends BlockChain<M, B> {
 
@@ -15,19 +42,32 @@ class BeaconBlockChain<M extends BeaconBlockMeta, B extends BeaconBlock<M>> exte
   //  with `block.number == blockheight`.
   // For real sharding, GHOST has to be implemented as fork-choice.
 
-  // TODO: instead of keeping the state for every block in memory this
-  //  could also be extracted as a special DB component,
-  //  or just only support getting the state of the last block.
-  List<BeaconBlockMeta> beaconStates = [
-    // first item is the genesis state (block index 0)
-    BeaconBlockMeta()
-  ];
+  /// The unfinalized beacon block-state tuples stored in a leveled DAG.
+  /// A path may be derived starting from the last finalized beacon state,
+  ///  and derive a head.
+  final Dag<BeaconEntry> beaconStates = new Dag<BeaconEntry>(const GHOST());
 
   @override
   Future<M> getBlockMeta(int blockNum) async {
-    if (beaconStates.length <= blockNum)
-      throw Exception("Block $blockNum is too new, no data available, state data is at ${beaconStates.length - 1}");
-    return beaconStates[blockNum];
+    // if the block is not finalized (i.e. under block-height), then look in the DAG.
+    if (blockHeight <= blockNum) {
+      if (blockNum < beaconStates.maxLevel) {
+        return beaconStates.findPath(maxLevel: blockNum).last.state;
+      }
+    } else {
+      // old block, just retrieve meta from DB
+      return await this.getFinalizedBeaconState(blockNum);
+    }
+      throw Exception("Block $blockNum is too new, no data available, state data is at ${blockHeight - 1}");
+  }
+
+  /// temporary hack; we can implement a real DB when we need it
+  Map<int, BeaconBlockMeta> finalizedBeaconStateDB = new Map();
+
+  /// Older states are just saved in a "DB", we do not need a DAG / GHOST,
+  ///  finalized finalized block states will not change.
+  Future<BeaconBlockMeta> getFinalizedBeaconState(int slotNum) async {
+    return this.finalizedBeaconStateDB[slotNum];
   }
 
   /// Future throws if block is invalid.

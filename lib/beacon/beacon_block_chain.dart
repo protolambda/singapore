@@ -2,35 +2,12 @@
 import 'package:protolith/blockchain/block/standard_block.dart';
 import 'package:protolith/blockchain/chain/block_chain.dart';
 import 'package:protolith/blockchain/chain/standard_block_chain.dart';
-import 'package:protolith/blockchain/hash.dart';
 import 'package:singapore/beacon/beacon_block.dart';
 import 'package:singapore/beacon/beacon_block_meta.dart';
+import 'package:singapore/beacon/unfinalized/beacon_entry.dart';
+import 'package:singapore/beacon/unfinalized/beacon_fork_choice.dart';
 import 'package:singapore/beacon/unfinalized/dag/dag.dart';
-import 'package:singapore/beacon/unfinalized/ghost.dart';
 
-class BeaconEntry extends DagNode<Hash256> {
-
-  BeaconBlock block;
-
-  BeaconBlockMeta state;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-          other is BeaconEntry &&
-              runtimeType == other.runtimeType &&
-              block.hash == other.block.hash;
-
-  @override
-  int get hashCode => block.hashCode;
-
-  @override
-  Hash256 get inwards => null;
-
-  @override
-  Hash256 get key => block.hash;
-
-}
 
 class BeaconBlockChain<M extends BeaconBlockMeta, B extends BeaconBlock<M>> extends BlockChain<M, B> {
 
@@ -45,7 +22,7 @@ class BeaconBlockChain<M extends BeaconBlockMeta, B extends BeaconBlock<M>> exte
   /// The unfinalized beacon block-state tuples stored in a leveled DAG.
   /// A path may be derived starting from the last finalized beacon state,
   ///  and derive a head.
-  final Dag<BeaconEntry> beaconStates = new Dag<BeaconEntry>(const GHOST());
+  final Dag<BeaconEntry> beaconStates = new Dag<BeaconEntry>(lmdGhost);
 
   @override
   Future<M> getBlockMeta(int blockNum) async {
@@ -69,6 +46,9 @@ class BeaconBlockChain<M extends BeaconBlockMeta, B extends BeaconBlock<M>> exte
   Future<BeaconBlockMeta> getFinalizedBeaconState(int slotNum) async {
     return this.finalizedBeaconStateDB[slotNum];
   }
+
+
+  /// TODO: based on chain confirmations we need to move beacon states from unfinalized DAG to finalized DB.
 
   /// Future throws if block is invalid.
   Future validateNewBlock(B block) async {

@@ -9,6 +9,9 @@ import 'package:singapore/beacon/meta/validator_registry.dart';
 class BeaconBlockMeta extends BlockMeta
   with Finality, Fork, PowReceiptRoot, Randao, RecentState, ValidatorRegistry {
 
+  // constant, but in meta to easily customize it per type of chain.
+  final int EPOCH_LENGTH = 1 << 6;
+
   /// the current slot number
   int slot;
 

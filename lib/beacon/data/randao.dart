@@ -11,12 +11,7 @@ import 'package:singapore/beacon/validators/validator_record.dart';
 
 mixin Randao<M extends BeaconBlockMeta> on Block<M> {
 
-  // TODO: move constant to config object?
-  int EPOCH_LENGTH = 1 << 6;
-
-  ///
   Hash256 randaoReveal;
-
 
   void verifyRandao(M meta) {
     ValidatorRecord proposer = meta.validatorRegistry[getBeaconProposerIndex(meta, meta.slot)];
@@ -39,7 +34,7 @@ mixin Randao<M extends BeaconBlockMeta> on Block<M> {
 
   /// Returns the [ShardCommittee] for the slot [s].
   List<ShardCommittee> getShardCommitteesAtSlot(M meta, int s) {
-    int earliestSlotInArray = meta.slot - (meta.slot % EPOCH_LENGTH) - EPOCH_LENGTH;
+    int earliestSlotInArray = meta.slot - (meta.slot % meta.EPOCH_LENGTH) - meta.EPOCH_LENGTH;
     // assert earliest_slot_in_array <= slot < earliest_slot_in_array + EPOCH_LENGTH * 2
     return meta.shardCommitteesAtSlots[s - earliestSlotInArray];
   }

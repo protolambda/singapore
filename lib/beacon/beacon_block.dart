@@ -8,12 +8,14 @@ import 'package:protolith/crypto/sha3.dart';
 import 'package:protolith/encodings/rlp/rlp_encode.dart';
 import 'package:protolith/encodings/serializeables/rlp_serializable.dart';
 import 'package:singapore/beacon/beacon_block_meta.dart';
+import 'package:singapore/beacon/data/signature.dart';
 import 'package:singapore/beacon/data/attestation.dart';
 import 'package:singapore/beacon/data/randao.dart';
 import 'package:singapore/beacon/data/slot.dart';
 
 class BeaconBlock<M extends BeaconBlockMeta> extends Block<M>
     with
+        Signature<M>,
         Attestation<M>,
         Randao<M>,
         Slot<M>,

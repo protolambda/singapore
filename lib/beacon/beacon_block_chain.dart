@@ -71,7 +71,11 @@ class BeaconBlockChain<M extends BeaconBlockMeta, B extends BeaconBlock<M>> exte
     state.latestBlockHashes.add(latestBlock.hash);
   }
 
+  // process block (each slot)
   void processBlock(B block) {
+
+    // check signature
+    block.verifySignature(this.state);
 
     // handle attestations
     block.verifyAttestations(this.state);
@@ -80,6 +84,17 @@ class BeaconBlockChain<M extends BeaconBlockMeta, B extends BeaconBlock<M>> exte
     // randao
     block.verifyRandao(this.state);
     block.processRandao(this.state);
+
+    // TODO: POW receipt and special block contents.
+
+    // If it is an epoch start, then process some more
+    if (state.slot % state.EPOCH_LENGTH == 0) {
+      processEpochBlock(block);
+    }
+  }
+
+  void processEpochBlock(B block) {
+    // TODO there's finalization and crosslinks to be made every epoch
   }
 
 

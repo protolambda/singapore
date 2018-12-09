@@ -20,7 +20,8 @@ class BeaconBlockChain<M extends BeaconBlockMeta, B extends BeaconBlock<M>> exte
   /// The unfinalized beacon blocks are stored in a leveled DAG.
   /// A path may be derived starting from the last finalized beacon state,
   ///  and derive a head.
-  final Dag<BeaconEntry> beaconBlocks = new Dag<BeaconEntry>(lmdGhost);
+  Dag<BeaconEntry> _beaconBlocks;
+  Dag<BeaconEntry> get beaconBlocks => _beaconBlocks;
 
   BeaconBlockMeta state;
 
@@ -30,6 +31,11 @@ class BeaconBlockChain<M extends BeaconBlockMeta, B extends BeaconBlock<M>> exte
 
   Future<B> get lastBlock async {
     return await db.getBlockByHash(state.latestBlockHashes[state.slot]);
+  }
+
+  BeaconBlockChain() {
+    // TODO initialize state.
+    this._beaconBlocks = new Dag<BeaconEntry>(getLmdGhost(this.state));
   }
 
   @override
@@ -57,10 +63,23 @@ class BeaconBlockChain<M extends BeaconBlockMeta, B extends BeaconBlock<M>> exte
 
       latestBlock = lastProposedBlock;
       lastProposedBlock = null;
+
+      processBlock(latestBlock);
     } else {
       latestBlock = (await lastBlock);
     }
     state.latestBlockHashes.add(latestBlock.hash);
+  }
+
+  void processBlock(B block) {
+
+    // handle attestations
+    block.verifyAttestations(this.state);
+    block.processAttestations(this.state);
+
+    // randao
+    block.verifyRandao(this.state);
+    block.processRandao(this.state);
   }
 
 

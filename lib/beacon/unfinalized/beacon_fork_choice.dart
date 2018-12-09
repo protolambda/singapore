@@ -6,14 +6,14 @@ import 'package:singapore/beacon/unfinalized/dag/fork_choice.dart';
 import 'package:singapore/beacon/unfinalized/ghost.dart';
 import 'package:singapore/beacon/validators/validator_record.dart';
 
-ForkChoiceRule lmdGhost = GHOST<BeaconEntry>((BeaconEntry entry) async {
-  List<ValidatorRecord> validators = entry.state.validatorRegistry;
+ForkChoiceRule getLmdGhost(BeaconBlockMeta state) => GHOST<BeaconEntry>((BeaconEntry entry) async {
+  List<ValidatorRecord> validators = state.validatorRegistry;
 
   List<ValidatorRecord> activeValidators =
       validators.where(isValidatorActive).toList();
 
   List<BeaconBlock> attestationTargets =
-      activeValidators.map((v) => getLatestAttestationTarget(entry.state, v));
+      activeValidators.map((v) => getLatestAttestationTarget(state, v));
 
   return (await Future.wait(attestationTargets.map((target) async {
     // TODO: fix missing vars here

@@ -10,5 +10,5 @@ mixin RecentState on BlockMeta {
   List<Hash256> latestBlockHashes;
   //  Balances penalized at every withdrawal period
   List<int> latestPenalizedExitBalances;
-  List<PendingAttestationRecord> latest_attestations;
+  List<PendingAttestationRecord> latestAttestations;
 }

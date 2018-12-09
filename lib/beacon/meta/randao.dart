@@ -11,4 +11,5 @@ mixin Randao on BlockMeta {
   List<List<ShardCommittee>> shardCommitteesAtSlots;
   List<List<int>> persistentCommittees;
   List<ShardReassignmentRecord> persistentCommitteeReassignments;
+
 }

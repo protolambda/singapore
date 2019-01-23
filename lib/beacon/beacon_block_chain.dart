@@ -2,6 +2,8 @@
 import 'package:protolith/blockchain/block/standard_block.dart';
 import 'package:protolith/blockchain/chain/block_chain.dart';
 import 'package:protolith/blockchain/chain/standard_block_chain.dart';
+import 'package:protolith/blockchain/db/meta_data/meta_data_db.dart';
+import 'package:protolith/blockchain/exceptions/unknown_block.dart';
 import 'package:protolith/blockchain/hash.dart';
 import 'package:protolith/crypto/data_util.dart';
 import 'package:singapore/beacon/beacon_block.dart';
@@ -13,6 +15,17 @@ import 'package:singapore/beacon/unfinalized/dag/dag.dart';
 
 class BeaconBlockChain<M extends BeaconBlockMeta, B extends BeaconBlock<M>> extends BlockChain<M, B> {
 
+
+  // constant, but in meta to easily customize it per type of chain.
+  // 64 slots
+  final int EPOCH_LENGTH = 1 << 6;
+  // 6 seconds
+  final int SLOT_DURATION = 6;
+
+  /// the Unix time of the genesis beacon chain block at slot 0
+  int genesisTime;
+
+
   /// The standard chain is synced as well, to use for POW.
   /// (Note; this is just the interface, data may come from elsewhere)
   StandardBlockChain eth1Chain;
@@ -23,109 +36,82 @@ class BeaconBlockChain<M extends BeaconBlockMeta, B extends BeaconBlock<M>> exte
   Dag<BeaconEntry> _beaconBlocks;
   Dag<BeaconEntry> get beaconBlocks => _beaconBlocks;
 
-  BeaconBlockMeta state;
-
-  /// Blockheight is interchangeable with slot, but kept for compatibility.
-  int get blockHeight => state.slot;
-  set blockHeight(int v) => state.slot = v;
-
-  Future<B> get lastBlock async {
-    return await db.getBlockByHash(state.latestBlockHashes[state.slot]);
-  }
-
   BeaconBlockChain() {
     // TODO initialize state.
+    // TODO select canonical chain head based on DAG
+    // TODO process slots/epochs after changing block head.
+
+    // TODO; state should be retrieved during scoring, based on block being scored, i.e. not static.
     this._beaconBlocks = new Dag<BeaconEntry>(getLmdGhost(this.state));
   }
 
-  @override
-  Future<M> getBlockMeta(int blockNum) async {
-    // Always return state; this is finalized. // TODO: worth/necessary to still keep old states?
-    // Conform to the block-number based meta retrieval; this makes coding a fork cleaner.
-    return state;
+  /// Returns the post-state for the block [blockHash].
+  Future<M> getBlockMeta(Hash256 hash, {MetaDataDB db}) async {
+    // Check if the block is known. If not, we cannot construct a post-state for the block.
+    B b = await this.getBlock(hash);
+    if (b == null) throw UnknownBlockException(hash, "Block hash is unknown. Cannot build state for it.");
+
+    // Create the view for the block.
+    BeaconBlockMeta meta = new BeaconBlockMeta(b.hash, b.number, db ?? metaDB);
+
+    return meta;
   }
 
-  B lastProposedBlock;
+
+  @override
+  Future validateBlock(B block) async {
+    // From spec:
+    // For a beacon chain block, block, to be processed by a node, the following conditions must be met:
+
+    BeaconBlockMeta meta = await getBlockMeta(headBlockHash);
+
+    // 1. The parent block with hash block.ancestor_hashes[0] has been processed and accepted.
+    if (block.ancestorHashes[0] != meta.hash) throw Exception("Blockchain not synced, unknown ancestor reference.");
+    // 2. The node has processed its state up to slot, block.slot - 1. [in a situation the slot is not active yet]
+    if (block.slot == meta.slot + 1) throw Exception("Blockchain not synced, cannot add block #${this.slot} to beacon chain at slot #${meta.slot}.");
+    // 3. The Ethereum 1.0 block pointed to by the state.processed_pow_receipt_root has been processed and accepted.
+    StandardBlock currentEth1Ref = await eth1Chain.getBlock(meta.processedPowReceiptRoot);
+    if (currentEth1Ref == null) throw Exception("Node is not synced with eth1.0 chain up to last block refered to by beacon state.");
+    // 4. The node's local clock time is greater than or equal to state.genesis_time + block.slot * SLOT_DURATION.
+    if ((new DateTime.now().millisecondsSinceEpoch ~/ 1000) >= (genesisTime + (block.slot * SLOT_DURATION))) throw Exception("Node time is not as far as block. Cannot accept block.");
+
+    // validate the block like normal, using the rules as specified in the block class.
+    super.validateBlock(block);
+  }
 
   /// Transition to the next slot. (and processing any proposed block)
   Future nextSlot() async {
     // update state data
-    state.slot += 1;
-    B latestBlock = null;
-    if (lastProposedBlock != null) {
-      // Verify that block.slot == state.slot
-      if (lastProposedBlock.slot != state.slot)
-        throw Exception("Proposed block is for mismatching slot number");
-      // Verify that block.ancestor_hashes equals get_updated_ancestor_hashes(latest_block, latest_hash)
-      List<Hash256> hashes = latestBlock.getUpdatedAncestorHashes();
-      if (!listElementwiseComparison(lastProposedBlock.ancestorHashes, hashes))
-        throw Exception("New block ancestors are invalid.");
 
-      latestBlock = lastProposedBlock;
-      lastProposedBlock = null;
+    BeaconBlockMeta meta = await getBlockMeta(headBlockHash);
 
-      processBlock(latestBlock);
-    } else {
-      latestBlock = (await lastBlock);
-    }
-    state.latestBlockHashes.add(latestBlock.hash);
-  }
+    meta.slot += 1;
 
-  // process block (each slot)
-  void processBlock(B block) {
+    // TODO update other counters (see spec)
 
-    // check signature
-    block.verifySignature(this.state);
+    meta.latestBlockRoots.add(meta.hash);
 
-    // handle attestations
-    block.verifyAttestations(this.state);
-    block.processAttestations(this.state);
-
-    // randao
-    block.verifyRandao(this.state);
-    block.processRandao(this.state);
-
-    // TODO: POW receipt and special block contents.
+    // TODO more block root processing
 
     // If it is an epoch start, then process some more
-    if (state.slot % state.EPOCH_LENGTH == 0) {
-      processEpochBlock(block);
+    if (meta.slot % EPOCH_LENGTH == 0) {
+      nextEpoch();
     }
   }
 
-  void processEpochBlock(B block) {
-    // TODO there's finalization and crosslinks to be made every epoch
+  Future nextEpoch() async {
+    BeaconBlockMeta meta = await getBlockMeta(headBlockHash);
+    if (meta.slot % EPOCH_LENGTH != 0) return;
+
+    // TODO implement epoch processing
   }
 
+  Future onNewProposedBlock(B block) async {
+    // Get the parent state where we will build on.
+    BeaconBlockMeta meta = await getBlockMeta(block.parentHash);
+    // TODO delta meta for proposed block.
 
-
-  /// TODO: based on chain consensus we need to move beacon states from unfinalized DAG to finalized DB.
-
-  /// Future throws if block is invalid.
-  Future validateNewBlock(B block) async {
-    // From spec:
-    // For a beacon chain block, block, to be processed by a node, the following conditions must be met:
-    B prev = await lastBlock;
-    // 1. The parent block with hash block.ancestor_hashes[0] has been processed and accepted.
-    if (block.ancestorHashes[0] != prev.hash) throw Exception("Blockchain not synced, unknown ancestor reference.");
-    // 2. The node has processed its state up to slot, block.slot - 1. [in a situation the slot is not active yet]
-    if (block.slot == blockHeight + 1) throw Exception("Blockchain not synced, cannot add block #${block.slot} to chain at height #${blockHeight}.");
-    // 3. The Ethereum 1.0 block pointed to by the state.processed_pow_receipt_root has been processed and accepted.
-    M currentMeta = await getBlockMeta(block.slot);
-    StandardBlock currentEth1Ref = await eth1Chain.getBlock(currentMeta.processedPowReceiptRoot);
-    if (currentEth1Ref == null) throw Exception("Node is not synced with eth1.0 chain up to last block refered to by beacon state.");
-    // 4. The node's local clock time is greater than or equal to state.genesis_time + block.slot * SLOT_DURATION.
-    // TODO: for demo purposes we completely ignore time; it's just an additional
-    //   acceptation thing to prevent timestamp manipulation, which is just what we do in a demo.
   }
 
-  @override
-  Future addValidBlock(B block) async {
-    // Instead of adding it to the DB, we keep track of the last proposed block,
-    //  and then the slot transition will process it.
-    if (lastProposedBlock == null || lastProposedBlock.slot <= block.slot) {
-      lastProposedBlock = block;
-    }
-  }
 
 }

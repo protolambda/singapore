@@ -7,7 +7,7 @@ mixin RecentState on BlockMeta {
 
   List<CrossLinkRecord> latestCrossLinks;
   // Needed to process attestations, older to newer
-  List<Hash256> latestBlockHashes;
+  List<Hash256> latestBlockRoots;
   //  Balances penalized at every withdrawal period
   List<int> latestPenalizedExitBalances;
   List<PendingAttestationRecord> latestAttestations;

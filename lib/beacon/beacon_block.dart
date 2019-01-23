@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:protolith/blockchain/block/block.dart';
+import 'package:protolith/blockchain/exceptions/invalid_block.dart';
 import 'package:protolith/blockchain/hash.dart';
 import 'package:protolith/crypto/data_util.dart';
 import 'package:protolith/crypto/sha3.dart';
@@ -44,11 +45,42 @@ class BeaconBlock<M extends BeaconBlockMeta> extends Block<M>
   }
 
   @override
-  Future<bool> validate(M meta) async {
+  Future validateWithState(M meta) async {
+    // TODO change to InvalidState exception
+    if (number != meta.slot + 1)
+      throw InvalidBlockException<M, Block<M>>(this,
+          "Known pre state is at ${meta.slot}, block with slot number ${slot} cannot be connected.");
+
     // TODO validate block
 
 
     return false;
+  }
+
+  /// Applies the implications of this block to [delta],
+  ///  a meta data DB view of the post-state of the parent block of this block,
+  ///  storing every change, to be finalized once the block processing is done
+  ///  (i.e. hash is known).
+  Future applyToDelta(M delta) async {
+    super.applyToDelta(delta);
+
+    // check signature
+    this.verifySignature(delta);
+
+    // handle attestations
+    this.verifyAttestations(delta);
+    this.processAttestations(delta);
+
+    // randao
+    this.verifyRandao(delta);
+    this.processRandao(delta);
+
+  }
+
+  Future applyEpochToDelta(M delta) async {
+    // TODO handle epoch changes
+
+    // TODO there's finalization and crosslinks to be made every epoch
   }
 
   /// Get the header-bytes used to create the block,

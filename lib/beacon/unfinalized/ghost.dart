@@ -12,7 +12,7 @@ class GHOST<N extends DagNode> extends ForkChoiceRule<N> {
   GHOST(this.scoreFn);
 
   @override
-  Future<N> chooseNode(N prev, dagLvl) async {
+  Future<N> chooseNode(N prev, DagLevel<N> dagLvl) async {
     N best;
     int bestScore = 0;
     for (N n in dagLvl.levelNodes) {

@@ -17,8 +17,8 @@ ForkChoiceRule getLmdGhost(BeaconBlockMeta state) => GHOST<BeaconEntry>((BeaconE
 
   return (await Future.wait(attestationTargets.map((target) async {
     // TODO: fix missing vars here
-    return (await getAncestor(null, target, entry.block.slot)).hash ==
-        entry.block.hash;
+    return (await getAncestor(null, target, entry.slot)).hash ==
+        entry.blockHash;
   })))
       .length;
 });

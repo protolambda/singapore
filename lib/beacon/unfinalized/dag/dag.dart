@@ -72,6 +72,8 @@ class Dag<N extends DagNode> {
     N prev = null;
     for (int i = 0; i < maxLevel; i++) {
       N chosen = await this.forkChoiceRule.chooseNode(prev, _levels[i]);
+      // end path already? Then return.
+      if (chosen == null) return;
       yield chosen;
       prev = chosen;
     }

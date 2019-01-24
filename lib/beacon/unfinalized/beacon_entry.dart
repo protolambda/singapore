@@ -4,9 +4,13 @@ import 'package:singapore/beacon/unfinalized/dag/dag.dart';
 
 class BeaconEntry extends DagNode<Hash256> {
 
-  Hash256 blockHash;
+  final Hash256 blockHash;
 
-  int slot;
+  final int slot;
+
+  int votes;
+
+  BeaconEntry(this.blockHash, this.slot);
 
   @override
   bool operator ==(Object other) =>

@@ -11,7 +11,7 @@ class BeaconNetwork<M extends BeaconBlockMeta, B extends BeaconBlock<M>, C exten
 
   @override
   Syncer<M, B, C> createSyncer() {
-    // TODO: add block provider(s) to syncer, and initialize it with this.chain.
+    // TODO: init syncer properly
     return new Syncer();
   }
 

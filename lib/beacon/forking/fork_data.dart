@@ -1,9 +1,9 @@
 class ForkData {
   /// Previous fork version
-  int preForkVersion;
+  int previousVersion;
 
-  /// Post fork version
-  int postForkVersion;
+  /// Current fork version
+  int currentVersion;
 
   /// Fork slot number
   int forkSlot;

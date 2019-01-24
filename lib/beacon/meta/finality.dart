@@ -6,4 +6,5 @@ mixin Finality on BlockMeta {
   int justifiedSlot;
   int justificationBitfield;
   int finalizedSlot;
+
 }

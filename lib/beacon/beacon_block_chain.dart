@@ -76,11 +76,11 @@ class BeaconBlockChain<M extends BeaconBlockMeta, B extends BeaconBlock<M>> exte
     // For a beacon chain block, block, to be processed by a node, the following conditions must be met:
 
     // 1. The parent block with hash block.ancestor_hashes[0] has been processed and accepted.
-    if (block.ancestorHashes[0] != meta.hash) throw Exception("Blockchain not synced, unknown ancestor reference.");
+    if (block.parentHash != meta.hash) throw Exception("Blockchain not synced, unknown parent hash reference.");
     // 2. The node has processed its state up to slot, block.slot - 1. [in a situation the slot is not active yet]
     if (block.slot == meta.slot + 1) throw Exception("Blockchain not synced, cannot add block #${block.slot} to beacon chain at slot #${meta.slot}.");
     // 3. The Ethereum 1.0 block pointed to by the state.processed_pow_receipt_root has been processed and accepted.
-    StandardBlock currentEth1Ref = await eth1Chain.getBlock(meta.processedPowReceiptRoot);
+    StandardBlock currentEth1Ref = await eth1Chain.getBlock(meta.latestEth1Data.blockHash);
     if (currentEth1Ref == null) throw Exception("Node is not synced with eth1.0 chain up to last block refered to by beacon state.");
     // 4. The node's local clock time is greater than or equal to state.genesis_time + block.slot * SLOT_DURATION.
     if ((new DateTime.now().millisecondsSinceEpoch ~/ 1000) >= (genesisTime + (block.slot * meta.SLOT_DURATION))) throw Exception("Node time is not as far as block. Cannot accept block.");

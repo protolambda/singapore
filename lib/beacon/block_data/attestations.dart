@@ -1,10 +1,10 @@
 import 'package:protolith/blockchain/block/block.dart';
-import 'package:singapore/beacon/attestation/pending_attestation_record.dart';
+import 'package:singapore/beacon/attestation/pending_attestation.dart';
 import 'package:singapore/beacon/beacon_block_meta.dart';
-import 'package:singapore/beacon/attestation/attestation_record.dart';
+import 'package:singapore/beacon/attestation/attestation.dart';
 
-mixin Attestation<M extends BeaconBlockMeta> on Block<M> {
-  List<AttestationRecord> attestations;
+mixin Attestations<M extends BeaconBlockMeta> on Block<M> {
+  List<Attestation> attestations;
 
   void verifyAttestations(M meta) {
     // TODO: verify all the properties of the attestation.
@@ -12,9 +12,9 @@ mixin Attestation<M extends BeaconBlockMeta> on Block<M> {
 
   void processAttestations(M meta) {
     this.attestations.forEach((attestation) {
-      meta.latestAttestations.add(new PendingAttestationRecord()
+      meta.latestAttestations.add(new PendingAttestation()
         ..data = attestation.data
-        ..participationBitfield = attestation.participationBitfield
+        ..aggregationBitfield = attestation.aggregationBitfield
         ..custodyBitfield = attestation.custodyBitfield
         ..slot_included = meta.slot);
     });

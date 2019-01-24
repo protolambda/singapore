@@ -5,7 +5,8 @@ import 'package:singapore/beacon/validators/validator.dart';
 mixin ValidatorRegistry on BlockMeta {
   /// Validator registry
   List<Validator> validatorRegistry;
-  int validatorRegistryLatestChangeSlot;
+  List<int> validatorBalances;
+  int validatorRegistryUpdateSlot;
   int validatorRegistryExitCount;
 
   /// For light clients to track deltas

@@ -1,9 +1,11 @@
 import 'package:protolith/blockchain/hash.dart';
 
-class CrossLinkRecord {
+class CrossLink {
+
   /// Slot number
   int slot;
 
   /// Shard block hash
-  Hash256 shardBlockHash;
+  Hash256 shardBlockRoot;
+
 }

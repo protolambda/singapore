@@ -3,13 +3,13 @@ import 'dart:typed_data';
 import 'package:singapore/beacon/attestation/attestation_data.dart';
 import 'package:singapore/crypto/BLSSignature.dart';
 
-class AttestationRecord {
+class Attestation {
 
   /// Attestation data
   AttestationData data;
 
-  /// Attester participation bitfield
-  Uint8List participationBitfield;
+  /// Attester aggregation bitfield
+  Uint8List aggregationBitfield;
 
   /// Proof of custody bitfield
   Uint8List custodyBitfield;

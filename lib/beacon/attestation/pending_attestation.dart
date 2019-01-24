@@ -2,12 +2,12 @@ import 'dart:typed_data';
 
 import 'package:singapore/beacon/attestation/attestation_data.dart';
 
-class PendingAttestationRecord {
+class PendingAttestation {
   /// Signed data
   AttestationData data;
 
-  /// Attester participation bitfield
-  Uint8List participationBitfield;
+  /// Attester aggregation bitfield
+  Uint8List aggregationBitfield;
 
   /// Proof of custody bitfield
   Uint8List custodyBitfield;

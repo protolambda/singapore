@@ -1,6 +1,7 @@
 import 'package:protolith/blockchain/db/meta_data/meta_data_db.dart';
 import 'package:protolith/blockchain/hash.dart';
 import 'package:protolith/blockchain/meta/blocks/meta.dart';
+import 'package:protolith/blockchain/pow/ethash/constants.dart';
 import 'package:singapore/beacon/meta/finality.dart';
 import 'package:singapore/beacon/meta/fork.dart';
 import 'package:singapore/beacon/meta/eth1.dart';
@@ -10,15 +11,6 @@ import 'package:singapore/beacon/meta/validator_registry.dart';
 
 class BeaconBlockMeta extends BlockMeta
   with Finality, Fork, Eth1, Randao, RecentState, ValidatorRegistry {
-
-
-  // constant, but in meta to easily customize it per type of chain.\
-  // (or even change settings after a given slot number, for better throughput)
-  // 64 slots
-  final int EPOCH_LENGTH = 1 << 6;
-  // 6 seconds
-  final int SLOT_DURATION = 6;
-
 
   /// TODO move to storage
   /// the current slot number
@@ -35,7 +27,7 @@ class BeaconBlockMeta extends BlockMeta
 
     // TODO update other counters (see spec)
 
-    latestBlockRoots.add(hash);
+    //latestBlockRoots.add(blockHash);
 
     // TODO more block root processing
 

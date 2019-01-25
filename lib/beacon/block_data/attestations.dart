@@ -11,12 +11,13 @@ mixin Attestations<M extends BeaconBlockMeta> on Block<M> {
   }
 
   void processAttestations(M meta) {
-    this.attestations.forEach((attestation) {
-      meta.latestAttestations.add(new PendingAttestation()
-        ..data = attestation.data
-        ..aggregationBitfield = attestation.aggregationBitfield
-        ..custodyBitfield = attestation.custodyBitfield
-        ..slot_included = meta.slot);
-    });
+    // TODO add to latest attestations
+//    this.attestations.forEach((attestation) async {
+//      .add(new PendingAttestation()
+//        ..data = attestation.data
+//        ..aggregationBitfield = attestation.aggregationBitfield
+//        ..custodyBitfield = attestation.custodyBitfield
+//        ..slot_included = meta.slot);
+//    });
   }
 }

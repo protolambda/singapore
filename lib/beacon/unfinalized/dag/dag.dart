@@ -14,6 +14,8 @@ abstract class DagNode<K> {
 
 }
 
+typedef bool RemoveCondition<K, N extends DagNode<K>>(K key, N node);
+
 /// A DAG, with one origin "genesis" node
 /// Each node in the DAG can only have one inwards "parent" node.
 /// Nodes can have multiple outwards "children" nodes.
@@ -45,6 +47,11 @@ class Dag<K, N extends DagNode<K>> {
       res = this.forkChoiceRule.chooseNode(res, this);
       yield res;
     }
+  }
+
+  /// Cleanup the DAG, remove nodes that satisfy the given [condition]
+  void cleanup(RemoveCondition<K, N> condition) {
+    nodes.removeWhere(condition);
   }
 
 }

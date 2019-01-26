@@ -8,10 +8,10 @@ import 'package:protolith/crypto/data_util.dart';
 mixin RecentStateMeta on BlockMeta {
 
   /// Needed to process attestations, older to newer
-  Future<Hash256> getLatestBlockRoot(int blockHeight) =>
+  Future<Hash256> getLatestBlockRoots(int blockHeight) =>
       db.getData(MetaDataKey("latest_blocks", blockHash, [blockHeight % LATEST_BLOCK_ROOTS_LENGTH])).then(decHash256);
 
-  Future setLatestBlockRoot(int blockHeight, Hash256 value) =>
+  Future setLatestBlockRoots(int blockHeight, Hash256 value) =>
       db.putData(MetaDataKey("latest_blocks", blockHash, [blockHeight % LATEST_BLOCK_ROOTS_LENGTH]), value.uint8list);
 
 
@@ -28,4 +28,19 @@ mixin RecentStateMeta on BlockMeta {
 
   Future setBatchedBlockRoot(int batchNr, Hash256 value) =>
       db.putData(MetaDataKey("latest_blocks", blockHash, [batchNr]), value.uint8list);
+
+
+  Future genesis() async {
+    await super.genesis();
+
+    // initialize latest blocks
+    await Future.wait(new List.generate(LATEST_BLOCK_ROOTS_LENGTH,
+            (i) => setLatestBlockRoots(i, ZERO_HASH)));
+    // initialize latest penalized balances
+    await Future.wait(new List.generate(LATEST_PENALIZED_EXIT_LENGTH,
+            (i) => setLatestPenalizedBalance(i, 0)));
+    // nothing to set for batched block roots
+    //  (access is by index, genesis = empty list)
+  }
+
 }

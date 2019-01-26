@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:protolith/blockchain/hash.dart';
+import 'package:singapore/crypto/BLSSignature.dart';
 
 /// 1,000,000,000
 ///
@@ -60,6 +61,9 @@ const int
     FAR_FUTURE_SLOT = (1 << 63) - 1;
 
 Hash256 ZERO_HASH = Hash256.fromTypedData(new Uint8List(32));
+
+// TODO BLS / other signature not implemented yet.
+BLSSignature EMPTY_SIGNATURE = BLSSignature();
 
 /*
       Time parameters

@@ -8,6 +8,9 @@ class FinalityData {
   int justificationBitfield;
   int finalizedSlot;
 
+  FinalityData(this.previousJustifiedSlot, this.justifiedSlot,
+      this.justificationBitfield, this.finalizedSlot);
+
 }
 
 // TODO

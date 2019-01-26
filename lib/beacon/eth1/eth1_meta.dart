@@ -20,4 +20,11 @@ mixin Eth1Meta on BlockMeta {
 
   Future setEth1DataVotes(List<Eth1DataVote> value) =>
       db.putData(MetaDataKey("eth1_data_votes", blockHash), encodeEth1DataVotes(value));
+
+
+  Future genesis() async {
+    await super.genesis();
+    await setEth1DataVotes([]);
+  }
+
 }

@@ -1,6 +1,7 @@
 import 'package:protolith/blockchain/meta/blocks/meta.dart';
 import 'package:singapore/beacon/fork/fork_data.dart';
 import 'package:protolith/blockchain/db/meta_data/meta_data_db.dart';
+import 'package:singapore/beacon/beacon_constants.dart';
 
 mixin ForkMeta on BlockMeta {
 
@@ -11,4 +12,9 @@ mixin ForkMeta on BlockMeta {
   Future setForkData(ForkData value) =>
       db.putData(MetaDataKey("fork", blockHash), encodeForkData(value));
 
+  Future genesis() async {
+    await super.genesis();
+    await setForkData(
+        ForkData(GENESIS_FORK_VERSION, GENESIS_FORK_VERSION, GENESIS_SLOT));
+  }
 }

@@ -27,6 +27,23 @@ mixin RandaoMeta on BlockMeta implements SlotMeta {
   Future setLatestVdfOutput(int nr, Hash256 value) =>
       db.putData(MetaDataKey("vdf_output", blockHash, [nr % LATEST_VDF_OUTPUTS_LENGTH]), value.uint8list);
 
+  Future genesis() async {
+    await super.genesis();
+    await setRandaoData(
+        RandaoData(
+            GENESIS_START_SHARD, GENESIS_START_SHARD,
+            GENESIS_SLOT, GENESIS_SLOT,
+            ZERO_HASH, ZERO_HASH)
+        );
+
+    // initialize randao mixes
+    await Future.wait(new List.generate(LATEST_RANDAO_MIXES_LENGTH,
+            (i) => setLatestRandaoMix(i, ZERO_HASH)));
+    // initialize vdf outputs
+    await Future.wait(new List.generate(LATEST_VDF_OUTPUTS_LENGTH,
+            (i) => setLatestVdfOutput(i, ZERO_HASH)));
+  }
+
   /// Returns the randao mix at a recent [slot].
   Future<Hash256> getRandaoMix(int slot) {
     assert(this.slot < slot + LATEST_RANDAO_MIXES_LENGTH);

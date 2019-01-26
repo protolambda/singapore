@@ -10,6 +10,8 @@ class ForkData {
   /// Fork slot number
   int forkSlot;
 
+  ForkData(this.previousVersion, this.currentVersion, this.forkSlot);
+
   /// Get the version at the given [slot].
   int getForkVersion(int slot) {
     if (slot < forkSlot) return previousVersion;

@@ -2,6 +2,7 @@
 import 'package:protolith/blockchain/block/standard_block.dart';
 import 'package:protolith/blockchain/chain/block_chain.dart';
 import 'package:protolith/blockchain/chain/standard_block_chain.dart';
+import 'package:protolith/blockchain/db/meta_data/memory_db.dart';
 import 'package:protolith/blockchain/db/meta_data/meta_data_db.dart';
 import 'package:protolith/blockchain/exceptions/unknown_block.dart';
 import 'package:protolith/blockchain/hash.dart';
@@ -10,7 +11,6 @@ import 'package:singapore/beacon/beacon_block_meta.dart';
 import 'package:singapore/beacon/beacon_constants.dart';
 import 'package:singapore/beacon/unfinalized/beacon_dag.dart';
 import 'package:singapore/beacon/unfinalized/beacon_entry.dart';
-
 
 class BeaconBlockChain<M extends BeaconBlockMeta, B extends BeaconBlock<M>> extends BlockChain<M, B> {
 
@@ -28,25 +28,51 @@ class BeaconBlockChain<M extends BeaconBlockMeta, B extends BeaconBlock<M>> exte
   BeaconDag _beaconDag;
   BeaconDag get beaconBlocks => _beaconDag;
 
+  /// Create a chain. This handles incoming blocks and updates the state.
+  /// After creating the chain, the [metaDB] and [blockDB] should be
+  ///  changed to the storage solution of choice.
+  /// And a ETH 1.0 chain needs to be attached, by changing [eth1Chain].
+  /// Once hooked up to storage and a ETH 1.0 chain,
+  ///  one could create a beacon genesis block by calling the [genesis] function
+  ///  and/or start syncing blocks (on top of existing storage data or not)
+  ///  by calling [addBlock(block)] repeatedly.
   BeaconBlockChain(this.genesisTime) {
-    // TODO initialize state.
-
-    this._beaconDag = new BeaconDag();
+    // Create the DAG that will be used for tracking unfinalized blocks.
+    _beaconDag = new BeaconDag();
   }
 
   Future genesis() async {
     B genesisBlock = new BeaconBlock<M>();
-    // TODO change genesis block contents.
+    genesisBlock
+      ..number = 0
+      ..slot = 0
+      ..timestamp = genesisTime
+      ..parentHash = ZERO_HASH
+      // TODO state root needs to be computed?
+      ..stateRoot = null
+      ..randaoReveal = EMPTY_SIGNATURE
+      ..proposerSlashings = []
+      ..casperSlashings = []
+      ..attestations = []
+      ..custodyReseeds = []
+      ..custodyResponses = []
+      ..deposits = []
+      ..exits = [];
 
     // instead of processing, we just add the block, we change the state ourselves.
-    await this.addValidBlock(genesisBlock);
+    await addValidBlock(genesisBlock);
 
-    M meta = await this.getBlockMeta(genesisBlock.hash);
+    MetaDataDB tempDB = InMemoryMetaDataDB();
+    M meta = await getBlockMeta(null, );
     // Initialize genesis state.
     await meta.genesis();
+    // Apply all changes together
+    // (prevent individual updates to every single latest-whatever data)
+    metaDB.putDataset(tempDB);
 
-
+    // Add the genesis block to the empty DAG
     _beaconDag.addNode(BeaconEntry(genesisBlock.hash, genesisBlock.slot));
+
     headBlockHash = genesisBlock.hash;
   }
 
@@ -84,6 +110,10 @@ class BeaconBlockChain<M extends BeaconBlockMeta, B extends BeaconBlock<M>> exte
 
     // Update the head of the chain.
     headBlockHash = dagEntry.blockHash;
+
+    // TODO: if new blocks are finalized,
+    //  then call _beaconDag.cleanup(() => ...)
+    //  to remove finalized blocks from the DAG.
   }
 
 

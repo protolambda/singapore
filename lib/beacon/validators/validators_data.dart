@@ -16,6 +16,13 @@ class ValidatorsData {
   /// For light clients to track deltas
   Hash256 validatorRegistryDeltaChainTip;
 
+  ValidatorsData(
+      this.validatorRegistry,
+      this.validatorBalances,
+      this.validatorRegistryUpdateSlot,
+      this.validatorRegistryExitCount,
+      this.validatorRegistryDeltaChainTip);
+
   Hash256 getLatestAttestationTarget(Validator v) {
     // TODO get target
     return null;

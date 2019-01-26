@@ -9,6 +9,13 @@ class ForkData {
 
   /// Fork slot number
   int forkSlot;
+
+  /// Get the version at the given [slot].
+  int getForkVersion(int slot) {
+    if (slot < forkSlot) return previousVersion;
+    else return currentVersion;
+  }
+
 }
 
 // TODO

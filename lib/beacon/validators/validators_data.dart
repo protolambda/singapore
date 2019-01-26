@@ -1,7 +1,9 @@
 import 'dart:typed_data';
+import 'dart:math' show min;
 
 import 'package:protolith/blockchain/hash.dart';
 import 'package:singapore/beacon/validators/validator.dart';
+import 'package:singapore/beacon/beacon_constants.dart';
 
 class ValidatorsData {
 
@@ -19,6 +21,14 @@ class ValidatorsData {
     return null;
   }
 
+  void shuffle() {
+    // TODO shuffle validators
+  }
+
+  /// Returns the effective balance (also known as "balance at stake") for a `validator` with the given [index].
+  int getEffectiveBalance(int index) {
+    return min(validatorBalances[index], MAX_DEPOSIT_AMOUNT);
+  }
 }
 
 ValidatorsData decodeValidatorsData(Uint8List data) => null;

@@ -1,3 +1,6 @@
+/// 1,000,000,000
+const int _giga = 1000000000;
+
 /*
       General
  */
@@ -10,7 +13,7 @@ const int
     TARGET_COMMITTEE_SIZE = 1 << 7,
 
     /// = 16,000,000,000 Gwei
-    EJECTION_BALANCE = (1 << 3) * 1000000000,
+    EJECTION_BALANCE = (1 << 3) * _giga,
 
     /// = 32
     MAX_BALANCE_CHURN_QUOTIENT = 1 << 5,
@@ -59,3 +62,13 @@ const int
 /// one vdf output for every epoch.
 const int LATEST_VDF_OUTPUTS_LENGTH =
     LATEST_RANDAO_MIXES_LENGTH ~/ EPOCH_LENGTH;
+
+/*
+      Deposit Contract
+ */
+const int
+    DEPOSIT_CONTRACT_TREE_DEPTH = 1 << 5,
+    MIN_DEPOSIT_AMOUNT = _giga,
+    MAX_DEPOSIT_AMOUNT = (1 << 5) * _giga;
+
+

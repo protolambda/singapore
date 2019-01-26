@@ -12,8 +12,19 @@ import 'package:singapore/beacon/randao/randao_meta.dart';
 import 'package:singapore/beacon/recent_state/recent_state_meta.dart';
 import 'package:singapore/beacon/validators/validators_meta.dart';
 
+/// Although "core" to the beacon-chain design, still a separate mixin,
+/// to create other designs more easily,
+/// and enable Meta-mixins to reference this mixin (e.g. the Randao mixin).
+mixin SlotMeta on BlockMeta {
+
+  /// the current slot number
+  int slot;
+
+}
+
 class BeaconBlockMeta extends BlockMeta
     with
+        SlotMeta,
         AttestationsMeta,
         CrossLinksMeta,
         Eth1Meta,
@@ -23,11 +34,11 @@ class BeaconBlockMeta extends BlockMeta
         RecentStateMeta,
         ValidatorsMeta {
 
-  /// the current slot number
-  int slot;
+  BeaconBlockMeta(Hash256 hash, int slot, int blockNum, MetaDataDB db)
+      : super(hash, blockNum, db) {
+    this.slot = slot;
+  }
 
-  BeaconBlockMeta(Hash256 hash, this.slot, int blockNum, MetaDataDB db)
-      : super(hash, blockNum, db);
 
   /// Transition to the next slot. (without processing any block)
   Future nextSlot() async {

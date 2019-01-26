@@ -22,9 +22,12 @@ Highlights:
 
 This project is different from the other Eth 2.0 project in the following ways:
 
-- No "state". Wtf? Well, the state is split up, and data is stored in a transactional way:
+- No "state". Wtf? Well, the state is split up, and data is stored in another way:
   the beacon-state is not saved every slot/block, but instead, only the changes are saved, and tagged with the corresponding block-hash. 
   And the underlying accesses to the data are async; the storage is abstracted, and a (cached) cloud-based DB may be one of the implementations in the future.
+  If a state-variable is queried, the query key supplies the block-hash, and the query goes through the ancestors of this block-hash till it finds an entry in the DB.
+  There's no deletion, only overriding. And the data can be pruned easily (time based on DB index order, or only-canonical-chain based on marking all ancestors of the HEAD).
+  You could compare this to the way Git works.
 - Like a few others, this project uses a DAG of blocks (just hashes), to keep track of the unfinalized blocks, and apply the LMD GHOST fork-choice rule to.
   In addition to that, this project deviates from the spec in a non-breaking way: the Beacon-DAG has a voting function
   which applies voting based on the target-blocks of each active validator, and does not back-track from targeted blocks

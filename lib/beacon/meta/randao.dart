@@ -24,7 +24,7 @@ class RandaoData {
 RandaoData decodeRandaoData(Uint8List data) => null;
 Uint8List encodeRandaoData(RandaoData data) => null;
 
-mixin Randao on BlockMeta {
+mixin RandaoMeta on BlockMeta {
 
   Future<RandaoData> getRandaoData() =>
       db.getData(MetaDataKey("randao", blockHash)).then(decodeRandaoData);

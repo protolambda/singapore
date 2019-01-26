@@ -12,7 +12,7 @@ List<Eth1DataVote> decodeEth1DataVotes(Uint8List data) => null;
 Uint8List encodeEth1DataVotes(List<Eth1DataVote> data) => null;
 
 /// Ethereum 1.0 chain data
-mixin Eth1 on BlockMeta {
+mixin Eth1Meta on BlockMeta {
 
   /// gets latest Eth1Data (there's only one)
   Future<Eth1Data> getEth1Data() =>

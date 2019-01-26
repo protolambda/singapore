@@ -15,7 +15,7 @@ Uint8List encodeCrossLink(CrossLink data) => null;
 List<PendingAttestation> decodePendingAttestations(Uint8List data) => null;
 Uint8List encodePendingAttestations(List<PendingAttestation> data) => null;
 
-mixin RecentState on BlockMeta {
+mixin RecentStateMeta on BlockMeta {
 
   Future<CrossLink> getLatestCrossLinks(int slot) =>
       db.getData(MetaDataKey("crosslinks", blockHash, [slot % SHARD_COUNT])).then(decodeCrossLink);

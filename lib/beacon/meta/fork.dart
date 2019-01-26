@@ -8,7 +8,7 @@ import 'package:protolith/blockchain/db/meta_data/meta_data_db.dart';
 ForkData decodeForkData(Uint8List data) => null;
 Uint8List encodeForkData(ForkData data) => null;
 
-mixin Fork on BlockMeta {
+mixin ForkMeta on BlockMeta {
 
   /// For versioning hard forks
   Future<ForkData> getForkData() =>

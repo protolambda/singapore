@@ -15,7 +15,7 @@ class FinalityData {
 FinalityData decodeFinalityData(Uint8List data) => null;
 Uint8List encodeFinalityData(FinalityData data) => null;
 
-mixin Finality on BlockMeta {
+mixin FinalityMeta on BlockMeta {
 
   Future<FinalityData> getFinalityData() =>
       db.getData(MetaDataKey("fork", blockHash)).then(decodeFinalityData);

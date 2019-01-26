@@ -1,6 +1,7 @@
 
 import 'package:protolith/blockchain/hash.dart';
 import 'package:singapore/beacon/beacon_block_meta.dart';
+import 'package:singapore/beacon/meta/validator_registry.dart';
 import 'package:singapore/beacon/unfinalized/beacon_entry.dart';
 import 'package:singapore/beacon/unfinalized/dag/dag.dart';
 import 'package:singapore/beacon/unfinalized/ghost.dart';
@@ -22,13 +23,14 @@ class BeaconDag extends Dag<Hash256, BeaconEntry> {
 
   Future updateDagVotes(BeaconBlockMeta meta) async {
 
-    List<Validator> validators = meta.validatorRegistry;
+    ValidatorsData vData = await meta.getValidatorsData();
+    List<Validator> validators = vData.validatorRegistry;
 
     List<Validator> activeValidators = validators.where((v) => v.isActive(meta.slot)).toList();
 
     // Get the last attested block of each validator (= LMD part),
     //  these will be the votes for a particular path of blocks.
-    List<Hash256> attestationTargets = activeValidators.map((v) => meta.getLatestAttestationTarget(v));
+    List<Hash256> attestationTargets = activeValidators.map((v) => vData.getLatestAttestationTarget(v));
 
     // reset all votes
     nodes.values.forEach(_resetVote);

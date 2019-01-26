@@ -10,7 +10,7 @@ import 'package:singapore/beacon/meta/recent_state.dart';
 import 'package:singapore/beacon/meta/validator_registry.dart';
 
 class BeaconBlockMeta extends BlockMeta
-  with Finality, Fork, Eth1, Randao, RecentState, ValidatorRegistry {
+  with FinalityMeta, ForkMeta, Eth1Meta, RandaoMeta, RecentStateMeta, ValidatorRegistryMeta {
 
   /// TODO move to storage
   /// the current slot number

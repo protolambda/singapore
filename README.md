@@ -2,69 +2,40 @@
 
 Sharding (initially focused on beacon chain) built on top of my experimental project [`protolith`](https://github.com/protolambda/protolith).
 
-ETHSingapore Hackathon project, to be built further with any available time/resources.
+Started off as an ambitious ETHSingapore Hackathon project (end 2018), but continued development early 2019.
+This project aims to become an extensible Eth 2.0 full node deployab
 
-By @protolambda
+This project is not commercial, quite experimental for now, and developed as a side-project (due to lack of funding).
 
-## Overview of codebase.
-
-```
-lib
-├── beacon                       -- Beacon chain implementation
-│   ├── beacon_block_chain.dart         -- The chain core
-│   ├── beacon_block.dart               -- Spec of a block, mixes data/ components
-│   ├── beacon_block_meta.dart          -- Spec for the context of a block (Beacon State here)
-│   ├── beacon_network.dart             -- Combines the chain with a "syncer"; source of external data
-|   |
-│   ├── attestation                               -- Classes for general attestation related work
-│   │   ├── attestation_data.dart
-│   │   ├── attestation_record.dart
-│   │   └── pending_attestation_record.dart
-│   ├── committees                                -- Classes to keep track of committee data.
-│   │   ├── shard_committee.dart
-│   │   └── shard_reassignment_record.dart
-│   ├── crosslinks                                -- Crosslink records
-│   │   └── cross_link_record.dart
-│   ├── data                             -- Mixins: compose your own custom beacon block with these.
-│   │   ├── attestation.dart
-│   │   ├── randao.dart
-│   │   ├── signature.dart
-│   │   └── slot.dart
-│   ├── forking                          -- Fork data (meta data in blocks in case a fork that needs a extra flags etc.)
-│   │   └── fork_data.dart
-│   ├── meta                             -- More mixins, but for the Block-meta (Beacon state here).
-│   │   ├── finality.dart                
-│   │   ├── fork.dart
-│   │   ├── pow_receipt_root.dart
-│   │   ├── randao.dart
-│   │   ├── recent_state.dart
-│   │   └── validator_registry.dart
-│   ├── pow                                              -- classes for Eth-1.0 related data.
-│   │   └── candidate_pow_receipt_root_record.dart
-│   ├── unfinalized                                  -- Where non-finalized blocks are maintained with
-│   │   ├── beacon_entry.dart                             -- wrap each block in an entry with extra functionality.
-│   │   ├── beacon_fork_choice.dart                       -- implementation of scoring used in GHOST, 
-|   |   |                                                 beacon chain itself does the Latest Message Driven (LMD) part.
-│   │   ├── dag                         -- DAG (leveled structure) used to order and path-find this block data. 
-│   │   │   ├── dag.dart
-│   │   │   └── fork_choice.dart
-│   │   └── ghost.dart                             -- implementation of GHOST as a fork-choice rule,
-|   |                                                   used in the DAG for pathfinding. 
-│   └── validators                      -- Validator related records used in the beacon chain.
-│       └── validator_record.dart
-├── crypto                                     TODO: BLS aggregate signatures, mocked for now, to be implemented.
-│   ├── BLSPubKey.dart
-│   └── BLSSignature.dart
-├── eth2.dart                                  Starts a "network" instance for Eth-1, Beacon chain, and shards.
-│
-│                              -- TODO:
-├── shard                      -- Shard chain implementation (similar to the standard-chain spec)
-└── validator                  -- The beacon chain already handles blocks, but we still need an initiator to propose and attest them.
-    ├── attester
-    └── proposer
+By @protolambda - Diederik Loerakker.
 
 
-```
+## Design choices
+
+Highlights:
+
+- Written in Dart, a language that runs on a lot of platforms, and quite well because of the effort of Google.
+- Very modular. The code-base is split up in features, which are mixed together using the `Mixin` feature of Dart.
+  This enables us to keep things *very* encapsulated, and enable you to create your own experimental Beacon chain **on-top** of this project, instead of hacking it apart.
+- Built on **`protolith`**, another side-project of @protolambda. Common blockchain features are shared,
+  and can be used for other types of blockchain nodes. E.g. a shard-chain may just be a remixed Eth 1.0 chain.
+
+This project is different from the other Eth 2.0 project in the following ways:
+
+- No "state". Wtf? Well, the state is split up, and data is stored in a transactional way:
+  the beacon-state is not saved every slot/block, but instead, only the changes are saved, and tagged with the corresponding block-hash. 
+  And the underlying accesses to the data are async; the storage is abstracted, and a (cached) cloud-based DB may be one of the implementations in the future.
+- Like a few others, this project uses a DAG of blocks (just hashes), to keep track of the unfinalized blocks, and apply the LMD GHOST fork-choice rule to.
+  In addition to that, this project deviates from the spec in a non-breaking way: the Beacon-DAG has a voting function
+  which applies voting based on the target-blocks of each active validator, and does not back-track from targeted blocks
+  every single hop in the GHOST path-finding towards the head of the chain.
+- Code-base is split up in features, and mixins enable quicker changes + experimentation.
+  Spec-design/experimentation could become easier and changes will be nicely encapsulated.
+- Focus on the Node-software first, not so much on the smartcontract / event-log processing.
+  Building Protolith (generalized blockchain node library) at the same time. 
+- No team/company/funding. Maybe someday. It's a hobby project for now, with whatever time I can afford to spent on it.
+  Contributions welcome! But please understand that it's in an early phase, and things may break.
+
 
 ## Contributing
 

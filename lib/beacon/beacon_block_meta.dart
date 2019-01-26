@@ -4,7 +4,7 @@ import 'package:protolith/blockchain/meta/blocks/meta.dart';
 import 'package:protolith/blockchain/pow/ethash/constants.dart';
 
 import 'package:singapore/beacon/attestation/attestations_meta.dart';
-import 'package:singapore/beacon/crosslinks/cross_links_meta.dart';
+import 'package:singapore/beacon/crosslinks/crosslinks_meta.dart';
 import 'package:singapore/beacon/eth1/eth1_meta.dart';
 import 'package:singapore/beacon/finality/finality_meta.dart';
 import 'package:singapore/beacon/fork/fork_meta.dart';
@@ -26,7 +26,7 @@ class BeaconBlockMeta extends BlockMeta
     with
         SlotMeta,
         AttestationsMeta,
-        CrossLinksMeta,
+        CrosslinksMeta,
         Eth1Meta,
         FinalityMeta,
         ForkMeta,

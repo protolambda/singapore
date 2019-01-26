@@ -3,7 +3,8 @@
 Sharding (initially focused on beacon chain) built on top of my experimental project [`protolith`](https://github.com/protolambda/protolith).
 
 Started off as an ambitious ETHSingapore Hackathon project (end 2018), but continued development early 2019.
-This project aims to become an extensible Eth 2.0 full node deployab
+This project aims to become an extensible Eth 2.0 full node with wide cross-platform support,
+ leveraging Dart-lang (browser, Linux, Mac, Windows, Android, iOS).
 
 This project is not commercial, quite experimental for now, and developed as a side-project (due to lack of funding).
 
@@ -37,7 +38,7 @@ This project is different from the other Eth 2.0 project in the following ways:
 - Focus on the Node-software first, not so much on the smartcontract / event-log processing.
   Building Protolith (generalized blockchain node library) at the same time. 
 - No team/company/funding. Maybe someday. It's a hobby project for now, with whatever time I can afford to spent on it.
-  Contributions welcome! But please understand that it's in an early phase, and things may break.
+  Contributions are welcome! But please understand that it's in an early phase, and things may break.
 
 
 ## Contributing
@@ -46,6 +47,13 @@ Discussions/suggestions are always welcome, but this code is just me during the 
 This repo will be made public near the end of the hackathon,
  PRs/issues will be open after judging, to grow the project :)
 
+## Contact
+
+Twitter/Github/Telegram: @protolambda
+Site: https://protolambda.com
+
+If anyone would like to donate to this project: [`0xE00ff7cf7b698Dde68a52D934B7726A24e54402D`](https://etherscan.io/address/0xe00ff7cf7b698dde68a52d934b7726a24e54402d)
+Also open to join another Eth 2.0 team, I am looking for technical full-time Ethereum related work.
 
 ## License
 

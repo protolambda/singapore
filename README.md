@@ -1,6 +1,6 @@
-# ETHSingapore hack: sharding!
+# Singapore
 
-Sharding (initially focused on beacon chain) built on top of my experimental project [`protolith`](https://github.com/protolambda/protolith).
+Eth 2.0 client, built on top of my experimental project [`protolith`](https://github.com/protolambda/protolith).
 
 Started off as an ambitious ETHSingapore Hackathon project (end 2018), but continued development early 2019.
 This project aims to become an extensible Eth 2.0 full node with wide cross-platform support,
@@ -23,7 +23,7 @@ Highlights:
 
 This project is different from the other Eth 2.0 project in the following ways:
 
-- No "state". Wtf? Well, the state is split up, and data is stored in another way:
+- No "state" model. Wtf? Well, the state is split up, and data is stored in another way:
   the beacon-state is not saved every slot/block, but instead, only the changes are saved, and tagged with the corresponding block-hash. 
   And the underlying accesses to the data are async; the storage is abstracted, and a (cached) cloud-based DB may be one of the implementations in the future.
   If a state-variable is queried, the query key supplies the block-hash, and the query goes through the ancestors of this block-hash till it finds an entry in the DB.

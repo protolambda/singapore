@@ -11,4 +11,12 @@ mixin CrossLinksMeta on BlockMeta {
   Future setLatestCrossLinks(int slot, CrossLink value) =>
       db.putData(MetaDataKey("crosslinks", blockHash, [slot % SHARD_COUNT]), encodeCrossLink(value));
 
+  Future genesis() async {
+    await super.genesis();
+
+    // add a crosslink for each shard.
+    await Future.wait(new List.generate(SHARD_COUNT,
+            (i) => setLatestCrossLinks(i, CrossLink(GENESIS_SLOT, ZERO_HASH))));
+  }
+
 }

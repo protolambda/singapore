@@ -1,4 +1,11 @@
+import 'dart:typed_data';
+
+import 'package:protolith/blockchain/hash.dart';
+
 /// 1,000,000,000
+///
+/// Note: this does not work in a browser and would need to be modified.
+/// One could try the beacon chain in a browser by changing [_giga] to be a million.
 const int _giga = 1000000000;
 
 /*
@@ -34,7 +41,28 @@ const int
     MAX_WITHDRAWALS_PER_EPOCH = 1 << 2;
 
 /*
-      Time
+      Deposit Contract
+ */
+const int
+    DEPOSIT_CONTRACT_TREE_DEPTH = 1 << 5,
+    MIN_DEPOSIT_AMOUNT = _giga,
+    MAX_DEPOSIT_AMOUNT = (1 << 5) * _giga;
+
+/*
+      Initial values
+ */
+const int
+    GENESIS_FORK_VERSION = 0,
+    GENESIS_SLOT = 0,
+    GENESIS_START_SHARD = 0,
+    /// Max signed 64 bit integer. Spec says unsigned, but this can be safely ignored.
+    /// Note: this does not work in a browser and would need to be modified. ((1 << 31) - 1, i.e. max signed 32 bit int, would work)
+    FAR_FUTURE_SLOT = (1 << 63) - 1;
+
+Hash256 ZERO_HASH = Hash256.fromTypedData(new Uint8List(32));
+
+/*
+      Time parameters
  */
 const int
 
@@ -63,12 +91,6 @@ const int
 const int LATEST_VDF_OUTPUTS_LENGTH =
     LATEST_RANDAO_MIXES_LENGTH ~/ EPOCH_LENGTH;
 
-/*
-      Deposit Contract
- */
-const int
-    DEPOSIT_CONTRACT_TREE_DEPTH = 1 << 5,
-    MIN_DEPOSIT_AMOUNT = _giga,
-    MAX_DEPOSIT_AMOUNT = (1 << 5) * _giga;
+
 
 

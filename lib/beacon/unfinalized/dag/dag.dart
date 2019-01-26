@@ -14,11 +14,9 @@ abstract class DagNode<K> {
 
 }
 
-/// A layered dag:
-/// - Each node has one input and can have multiple outputs.
-/// - Each node has a level (distance from first dag node)
-/// - Level numbers can be any int.
-/// - Nodes on the same level are considered to be of the same height, but may have very different paths leading up to them.
+/// A DAG, with one origin "genesis" node
+/// Each node in the DAG can only have one inwards "parent" node.
+/// Nodes can have multiple outwards "children" nodes.
 class Dag<K, N extends DagNode<K>> {
 
   final ForkChoiceRule forkChoiceRule;
@@ -29,7 +27,15 @@ class Dag<K, N extends DagNode<K>> {
 
   void addNode(N node) {
     nodes[node.key] = node;
-    nodes[node.inwards].outwards.add(node.key);
+    if (node.inwards != null) {
+      N parent = nodes[node.inwards];
+      if (parent == null)
+        throw Exception("Cannot add node, parent node is not known.");
+      parent.outwards.add(node.key);
+    } else {
+      if (nodes.isNotEmpty)
+        throw Exception("Cannot add a second genesis node.");
+    }
   }
 
   Iterable<N> findPath(K start) sync* {

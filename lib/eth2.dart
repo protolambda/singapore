@@ -27,7 +27,9 @@ class Eth2 {
     var eth1Chain = new StandardBlockChain<StandardBlockMeta, StandardBlock<StandardBlockMeta>>();
     eth1Network = new StandardNetwork(eth1NetworkId, eth1ChainId, eth1Chain);
 
-    var beaconChain = new BeaconBlockChain<BeaconBlockMeta, BeaconBlock<BeaconBlockMeta>>();
+    // TODO genesis time
+    int genesisTime = 0;
+    var beaconChain = new BeaconBlockChain<BeaconBlockMeta, BeaconBlock<BeaconBlockMeta>>(genesisTime);
     beaconNetwork = new BeaconNetwork(eth2NetworkId, beaconChain);
 
     // TODO: initialize shards.

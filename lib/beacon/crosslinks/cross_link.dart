@@ -10,6 +10,8 @@ class CrossLink {
   /// Shard block hash
   Hash256 shardBlockRoot;
 
+  CrossLink(this.slot, this.shardBlockRoot);
+
 }
 
 // TODO

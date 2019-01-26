@@ -28,10 +28,26 @@ class BeaconBlockChain<M extends BeaconBlockMeta, B extends BeaconBlock<M>> exte
   BeaconDag _beaconDag;
   BeaconDag get beaconBlocks => _beaconDag;
 
-  BeaconBlockChain() {
+  BeaconBlockChain(this.genesisTime) {
     // TODO initialize state.
 
     this._beaconDag = new BeaconDag();
+  }
+
+  Future genesis() async {
+    B genesisBlock = new BeaconBlock<M>();
+    // TODO change genesis block contents.
+
+    // instead of processing, we just add the block, we change the state ourselves.
+    await this.addValidBlock(genesisBlock);
+
+    M meta = await this.getBlockMeta(genesisBlock.hash);
+    // Initialize genesis state.
+    await meta.genesis();
+
+
+    _beaconDag.addNode(BeaconEntry(genesisBlock.hash, genesisBlock.slot));
+    headBlockHash = genesisBlock.hash;
   }
 
   /// Returns the post-state for the block [blockHash].

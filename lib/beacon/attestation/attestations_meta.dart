@@ -15,4 +15,9 @@ mixin AttestationsMeta on BlockMeta {
   Future setLatestAttestations(List<PendingAttestation> value) =>
       db.putData(MetaDataKey("latest_attestations", blockHash), encodePendingAttestations(value));
 
+  Future genesis() async {
+    await super.genesis();
+    await setLatestAttestations([]);
+  }
+
 }

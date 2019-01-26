@@ -4,7 +4,7 @@ Eth 2.0 client, built on top of my experimental project [`protolith`](https://gi
 
 Started off as an ambitious ETHSingapore Hackathon project (end 2018), but continued development early 2019.
 This project aims to become an extensible Eth 2.0 full node with wide cross-platform support,
- leveraging Dart-lang (browser, Linux, Mac, Windows, Android, iOS).
+ leveraging Dart-lang (Browsers<sup>*</sup> Linux, Mac, Windows, Android, iOS).
 
 This project is not commercial, quite experimental for now, and developed as a side-project (due to lack of funding).
 
@@ -39,6 +39,13 @@ This project is different from the other Eth 2.0 project in the following ways:
   Building Protolith (generalized blockchain node library) at the same time. 
 - No team/company/funding. Maybe someday. It's a hobby project for now, with whatever time I can afford to spent on it.
   Contributions are welcome! But please understand that it's in an early phase, and things may break.
+
+#### Note on browser support
+
+Browsers are also considered, but Dart 2.0 falls back on 32 bit integers here,
+ so it would only work with smaller toy numbers (i.e. deposit amounts).
+And performance may be considerably worse than on other platforms that run code natively
+ (instead of cross compiled javascript). It could be good enough for demo purposes however.
 
 
 ## Contributing

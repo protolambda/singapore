@@ -5,7 +5,7 @@ import 'package:singapore/beacon/custody/custody_challenge.dart';
 import 'package:singapore/beacon/custody/custody_reseed.dart';
 import 'package:singapore/beacon/custody/custody_response.dart';
 
-mixin Custody<M extends BeaconBlockMeta> on Block<M> {
+mixin CustodyBlockData<M extends BeaconBlockMeta> on Block<M> {
 
   List<CustodyReseed> custodyReseeds;
   List<CustodyChallenge> custodyChallenges;

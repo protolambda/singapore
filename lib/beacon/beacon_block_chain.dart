@@ -41,7 +41,7 @@ class BeaconBlockChain<M extends BeaconBlockMeta, B extends BeaconBlock<M>> exte
     if (b == null) throw UnknownBlockException(hash, "Block hash is unknown. Cannot build state for it.");
 
     // Create the view for the block.
-    BeaconBlockMeta meta = new BeaconBlockMeta(b.hash, b.number, db ?? metaDB);
+    BeaconBlockMeta meta = new BeaconBlockMeta(b.hash, b.slot, b.number, db ?? metaDB);
 
     return meta;
   }

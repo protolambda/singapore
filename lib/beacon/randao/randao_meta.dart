@@ -1,28 +1,9 @@
-import 'dart:typed_data';
-
 import 'package:protolith/blockchain/hash.dart';
 import 'package:protolith/blockchain/meta/blocks/meta.dart';
 import 'package:protolith/blockchain/db/meta_data/meta_data_db.dart';
 import 'package:protolith/crypto/data_util.dart';
 import 'package:singapore/beacon/beacon_constants.dart';
-
-class RandaoData {
-
-  List<Hash256> latestRandaoMixes;
-  List<Hash256> latestVdfOutputs;
-
-  int previousEpochStartShard;
-  int currentEpochStartShard;
-  int previousEpochCalculationSlot;
-  int currentEpochCalculationSlot;
-  Hash256 previousEpochRandaoMix;
-  Hash256 currentEpochRandaoMix;
-
-}
-
-// TODO
-RandaoData decodeRandaoData(Uint8List data) => null;
-Uint8List encodeRandaoData(RandaoData data) => null;
+import 'package:singapore/beacon/randao/randao_data.dart';
 
 mixin RandaoMeta on BlockMeta {
 

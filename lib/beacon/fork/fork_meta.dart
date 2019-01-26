@@ -1,12 +1,6 @@
-import 'dart:typed_data';
-
 import 'package:protolith/blockchain/meta/blocks/meta.dart';
-import 'package:singapore/beacon/forking/fork_data.dart';
+import 'package:singapore/beacon/fork/fork_data.dart';
 import 'package:protolith/blockchain/db/meta_data/meta_data_db.dart';
-
-// TODO
-ForkData decodeForkData(Uint8List data) => null;
-Uint8List encodeForkData(ForkData data) => null;
 
 mixin ForkMeta on BlockMeta {
 

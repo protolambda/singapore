@@ -1,11 +1,10 @@
-
 import 'package:protolith/blockchain/hash.dart';
 import 'package:singapore/beacon/beacon_block_meta.dart';
-import 'package:singapore/beacon/meta/validator_registry.dart';
 import 'package:singapore/beacon/unfinalized/beacon_entry.dart';
 import 'package:singapore/beacon/unfinalized/dag/dag.dart';
 import 'package:singapore/beacon/unfinalized/ghost.dart';
 import 'package:singapore/beacon/validators/validator.dart';
+import 'package:singapore/beacon/validators/validators_data.dart';
 
 class BeaconDag extends Dag<Hash256, BeaconEntry> {
 

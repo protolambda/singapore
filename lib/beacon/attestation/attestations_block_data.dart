@@ -1,9 +1,8 @@
 import 'package:protolith/blockchain/block/block.dart';
-import 'package:singapore/beacon/attestation/pending_attestation.dart';
 import 'package:singapore/beacon/beacon_block_meta.dart';
 import 'package:singapore/beacon/attestation/attestation.dart';
 
-mixin Attestations<M extends BeaconBlockMeta> on Block<M> {
+mixin AttestationsBlockData<M extends BeaconBlockMeta> on Block<M> {
   List<Attestation> attestations;
 
   void verifyAttestations(M meta) {

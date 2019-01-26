@@ -2,23 +2,32 @@ import 'package:protolith/blockchain/db/meta_data/meta_data_db.dart';
 import 'package:protolith/blockchain/hash.dart';
 import 'package:protolith/blockchain/meta/blocks/meta.dart';
 import 'package:protolith/blockchain/pow/ethash/constants.dart';
-import 'package:singapore/beacon/meta/finality.dart';
-import 'package:singapore/beacon/meta/fork.dart';
-import 'package:singapore/beacon/meta/eth1.dart';
-import 'package:singapore/beacon/meta/randao.dart';
-import 'package:singapore/beacon/meta/recent_state.dart';
-import 'package:singapore/beacon/meta/validator_registry.dart';
+
+import 'package:singapore/beacon/attestation/attestations_meta.dart';
+import 'package:singapore/beacon/crosslinks/cross_links_meta.dart';
+import 'package:singapore/beacon/eth1/eth1_meta.dart';
+import 'package:singapore/beacon/finality/finality_meta.dart';
+import 'package:singapore/beacon/fork/fork_meta.dart';
+import 'package:singapore/beacon/randao/randao_meta.dart';
+import 'package:singapore/beacon/recent_state/recent_state_meta.dart';
+import 'package:singapore/beacon/validators/validators_meta.dart';
 
 class BeaconBlockMeta extends BlockMeta
-  with FinalityMeta, ForkMeta, Eth1Meta, RandaoMeta, RecentStateMeta, ValidatorRegistryMeta {
+    with
+        AttestationsMeta,
+        CrossLinksMeta,
+        Eth1Meta,
+        FinalityMeta,
+        ForkMeta,
+        RandaoMeta,
+        RecentStateMeta,
+        ValidatorsMeta {
 
-  /// TODO move to storage
   /// the current slot number
   int slot;
 
-  BeaconBlockMeta(Hash256 hash, int blockNum, MetaDataDB db)
+  BeaconBlockMeta(Hash256 hash, this.slot, int blockNum, MetaDataDB db)
       : super(hash, blockNum, db);
-
 
   /// Transition to the next slot. (without processing any block)
   Future nextSlot() async {
@@ -43,5 +52,4 @@ class BeaconBlockMeta extends BlockMeta
     // TODO implement epoch processing
     // TODO there's finalization and crosslinks to be made every epoch
   }
-
 }

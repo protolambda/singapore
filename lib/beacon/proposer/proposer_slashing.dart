@@ -1,4 +1,4 @@
-import 'package:singapore/beacon/slashings/proposer/proposal_signed_data.dart';
+import 'package:singapore/beacon/proposer/proposal_signed_data.dart';
 import 'package:singapore/crypto/BLSSignature.dart';
 
 class ProposerSlashing {

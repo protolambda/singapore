@@ -7,28 +7,30 @@ import 'package:protolith/crypto/data_util.dart';
 import 'package:protolith/crypto/sha3.dart';
 import 'package:protolith/encodings/rlp/rlp_encode.dart';
 import 'package:protolith/encodings/serializeables/rlp_serializable.dart';
+
 import 'package:singapore/beacon/beacon_block_meta.dart';
-import 'package:singapore/beacon/block_data/attestations.dart';
-import 'package:singapore/beacon/block_data/custody.dart';
-import 'package:singapore/beacon/block_data/deposits.dart';
-import 'package:singapore/beacon/block_data/eth1.dart';
-import 'package:singapore/beacon/block_data/exits.dart';
-import 'package:singapore/beacon/block_data/randao.dart';
-import 'package:singapore/beacon/block_data/signature.dart';
-import 'package:singapore/beacon/block_data/slashings.dart';
-import 'package:singapore/beacon/block_data/state.dart';
+
+import 'package:singapore/beacon/attestation/attestations_block_data.dart';
+import 'package:singapore/beacon/casper/casper_block_data.dart';
+import 'package:singapore/beacon/custody/custody_block_data.dart';
+import 'package:singapore/beacon/deposits/deposits_block_data.dart';
+import 'package:singapore/beacon/eth1/eth1_block_data.dart';
+import 'package:singapore/beacon/proposer/proposer_block_data.dart';
+import 'package:singapore/beacon/randao/randao_block_data.dart';
+import 'package:singapore/beacon/signoff/signoff_block_data.dart';
+import 'package:singapore/beacon/validators/validators_block_data.dart';
 
 class BeaconBlock<M extends BeaconBlockMeta> extends Block<M>
     with
-        Attestations<M>,
-        Custody<M>,
-        Deposits<M>,
-        Eth1<M>,
-        Exits<M>,
-        Randao<M>,
-        Signature<M>,
-        Slashings<M>,
-        State<M>,
+        AttestationsBlockData<M>,
+        CasperBlockData<M>,
+        CustodyBlockData<M>,
+        DepositsBlockData<M>,
+        Eth1BlockData<M>,
+        ProposerBlockData<M>,
+        RandaoBlockData<M>,
+        SignoffBlockData<M>,
+        ValidatorsBlockData<M>,
         RlpEncodeable,
         RlpDecodeable {
 

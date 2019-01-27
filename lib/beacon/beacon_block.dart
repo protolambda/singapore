@@ -11,11 +11,11 @@ import 'package:protolith/encodings/serializeables/rlp_serializable.dart';
 import 'package:singapore/beacon/beacon_block_meta.dart';
 
 import 'package:singapore/beacon/attestation/attestations_block_data.dart';
-import 'package:singapore/beacon/casper/casper_block_data.dart';
+import 'package:singapore/beacon/slashing/casper/casper_block_data.dart';
 import 'package:singapore/beacon/custody/custody_block_data.dart';
 import 'package:singapore/beacon/deposits/deposits_block_data.dart';
 import 'package:singapore/beacon/eth1/eth1_block_data.dart';
-import 'package:singapore/beacon/proposer/proposer_block_data.dart';
+import 'package:singapore/beacon/slashing/proposer/proposer_block_data.dart';
 import 'package:singapore/beacon/randao/randao_block_data.dart';
 import 'package:singapore/beacon/signoff/signoff_block_data.dart';
 import 'package:singapore/beacon/validators/validators_block_data.dart';

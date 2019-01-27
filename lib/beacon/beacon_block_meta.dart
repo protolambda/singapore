@@ -10,7 +10,8 @@ import 'package:singapore/beacon/eth1/eth1_meta.dart';
 import 'package:singapore/beacon/finality/finality_meta.dart';
 import 'package:singapore/beacon/fork/fork_meta.dart';
 import 'package:singapore/beacon/randao/randao_meta.dart';
-import 'package:singapore/beacon/recent_state/recent_state_meta.dart';
+import 'package:singapore/beacon/block_history/block_history_meta.dart';
+import 'package:singapore/beacon/slashing/slashing_meta.dart';
 import 'package:singapore/beacon/validators/validators_meta.dart';
 
 /// Although "core" to the beacon-chain design, still a separate mixin,
@@ -33,7 +34,8 @@ class BeaconBlockMeta extends BlockMeta
         FinalityMeta,
         ForkMeta,
         RandaoMeta,
-        RecentStateMeta,
+        SlashingMeta,
+        BlockHistoryMeta,
         ValidatorsMeta {
 
   BeaconBlockMeta(Hash256 hash, int slot, MetaDataDB db)

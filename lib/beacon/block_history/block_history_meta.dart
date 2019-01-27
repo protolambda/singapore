@@ -5,7 +5,7 @@ import 'package:singapore/beacon/beacon_constants.dart';
 import 'package:protolith/crypto/data_util.dart';
 
 
-mixin RecentStateMeta on BlockMeta {
+mixin BlockHistoryMeta on BlockMeta {
 
   /// Needed to process attestations, older to newer
   Future<Hash256> getLatestBlockRoots(int blockHeight) =>
@@ -15,19 +15,11 @@ mixin RecentStateMeta on BlockMeta {
       db.putData(MetaDataKey("latest_blocks", blockHash, [blockHeight % LATEST_BLOCK_ROOTS_LENGTH]), value.uint8list);
 
 
-  /// Balances penalized at every withdrawal period
-  Future<int> getLatestPenalizedBalance(int slot) =>
-      db.getData(MetaDataKey("latest_penalized_balances", blockHash, [slot % LATEST_PENALIZED_EXIT_LENGTH])).then(decInt64);
-
-  Future setLatestPenalizedBalance(int slot, int value) =>
-      db.putData(MetaDataKey("latest_penalized_balances", blockHash, [slot % LATEST_PENALIZED_EXIT_LENGTH]), encInt64(value));
-
-
   Future<Hash256> getBatchedBlockRoot(int batchNr) =>
-      db.getData(MetaDataKey("latest_blocks", blockHash, [batchNr])).then(decHash256);
+      db.getData(MetaDataKey("batched_roots", blockHash, [batchNr])).then(decHash256);
 
   Future setBatchedBlockRoot(int batchNr, Hash256 value) =>
-      db.putData(MetaDataKey("latest_blocks", blockHash, [batchNr]), value.uint8list);
+      db.putData(MetaDataKey("batched_roots", blockHash, [batchNr]), value.uint8list);
 
 
   Future genesis() async {
@@ -36,9 +28,6 @@ mixin RecentStateMeta on BlockMeta {
     // initialize latest blocks
     await Future.wait(new List.generate(LATEST_BLOCK_ROOTS_LENGTH,
             (i) => setLatestBlockRoots(i, ZERO_HASH)));
-    // initialize latest penalized balances
-    await Future.wait(new List.generate(LATEST_PENALIZED_EXIT_LENGTH,
-            (i) => setLatestPenalizedBalance(i, 0)));
     // nothing to set for batched block roots
     //  (access is by index, genesis = empty list)
   }

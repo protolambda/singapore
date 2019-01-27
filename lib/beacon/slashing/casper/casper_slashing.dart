@@ -1,4 +1,4 @@
-import 'package:singapore/beacon/casper/slashable_vote_data.dart';
+import 'package:singapore/beacon/slashing/casper/slashable_vote_data.dart';
 
 class CasperSlashing {
 

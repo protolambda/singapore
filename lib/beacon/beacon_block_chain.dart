@@ -42,11 +42,9 @@ class BeaconBlockChain<M extends BeaconBlockMeta, B extends BeaconBlock<M>> exte
   }
 
   Future genesis() async {
-    B genesisBlock = new BeaconBlock<M>();
+    BeaconBlock<M> genesisBlock = new BeaconBlock<M>();
     genesisBlock
-      ..number = 0
       ..slot = 0
-      ..timestamp = genesisTime
       ..parentHash = ZERO_HASH
       // TODO state root needs to be computed?
       ..stateRoot = null
@@ -83,7 +81,7 @@ class BeaconBlockChain<M extends BeaconBlockMeta, B extends BeaconBlock<M>> exte
     if (b == null) throw UnknownBlockException(hash, "Block hash is unknown. Cannot build state for it.");
 
     // Create the view for the block.
-    BeaconBlockMeta meta = new BeaconBlockMeta(b.hash, b.slot, b.number, db ?? metaDB);
+    BeaconBlockMeta meta = new BeaconBlockMeta(b.hash, b.slot, db ?? metaDB);
 
     return meta;
   }

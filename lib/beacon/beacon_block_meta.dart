@@ -36,8 +36,8 @@ class BeaconBlockMeta extends BlockMeta
         RecentStateMeta,
         ValidatorsMeta {
 
-  BeaconBlockMeta(Hash256 hash, int slot, int blockNum, MetaDataDB db)
-      : super(hash, blockNum, db) {
+  BeaconBlockMeta(Hash256 hash, int slot, MetaDataDB db)
+      : super(hash, db) {
     this.slot = slot;
   }
 
